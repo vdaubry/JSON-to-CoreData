@@ -11,10 +11,18 @@
 @implementation NSManagedObject (safeSetValuesForKeysWithDictionary)
 
 - (void)safeSetManagedValuesForKeysWithDictionary:(NSDictionary *)keyedValues dateFormatter:(NSDateFormatter *)dateFormatter
+- (void)safeSetManagedValuesForKeysWithDictionary:(NSDictionary *)keyedValues dateFormatter:(NSDateFormatter *)dateFormatter {
+    [self safeSetManagedValuesForKeysWithDictionary:keyedValues dateFormatter:dateFormatter mapping:nil];
+}
+
+- (void)safeSetManagedValuesForKeysWithDictionary:(NSDictionary *)keyedValues dateFormatter:(NSDateFormatter *)dateFormatter mapping:(NSDictionary *)mapping
 {
     NSDictionary *attributes = [[self entity] attributesByName];
     for (NSString *attribute in attributes) {
-        id value = [keyedValues objectForKey:attribute];
+        id value = nil;
+        if (mapping != nil) { value = [keyedValues objectForKey:[mapping objectForKey:attribute]]; }
+        else { value = [keyedValues objectForKey:attribute]; }
+        
         if (value == nil) {
             continue;
         }
